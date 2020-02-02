@@ -1,0 +1,138 @@
+apiVersion: v1
+baseDomain: schmaustech.com
+metadata:
+  name: kni5
+networking:
+  networkType: OVNKubernetes
+  machineCIDR: fd35:919d:4042:2::/64
+  clusterNetwork:
+  - cidr: fd01::/48
+    hostPrefix: 64
+  serviceNetwork:
+  - fd02::/112
+compute:
+- name: worker
+  replicas: 0
+controlPlane:
+  name: master
+  replicas: 3
+  platform:
+    baremetal: {}
+platform:
+  baremetal:
+    apiVIP: fd35:919d:4042:2::1199
+    ingressVIP: fd35:919d:4042:2::1197
+    dnsVIP: fd35:919d:4042:2::1198
+    bootstrapOSImage: http://172.22.0.1/images/rhcos-43.81.202001142154.0-qemu.x86_64.qcow2.gz?sha256=996011cd8973f87591903b83e404d8de0cf9229c99a79b9f1a2ee7778575e3f8
+    clusterOSImage: http://172.22.0.1/images/rhcos-43.81.202001142154.0-openstack.x86_64.qcow2.gz?sha256=a1bda656fa0892f7b936fdc6b6a6086bddaed5dafacedcd7a1e811abb78fe3b0
+    hosts:
+      - name: master-0
+        role: master
+        bmc:
+          address: ipmi://fd35:919d:4042:2::1164:6241
+          username: admin
+          password: password
+        bootMACAddress: 52:54:00:3d:04:ae
+        hardwareProfile: default
+      - name: master-1
+        role: master
+        bmc:
+          address: ipmi://fd35:919d:4042:2::1164:6261
+          username: admin
+          password: password
+        bootMACAddress: 52:54:00:37:80:89
+        hardwareProfile: default
+      - name: master-2
+        role: master
+        bmc:
+          address: ipmi://fd35:919d:4042:2::1164:6231
+          username: admin
+          password: password
+        bootMACAddress: 52:54:00:4f:e4:7c
+        hardwareProfile: default
+sshKey: 'SSHKEYHERE'
+imageContentSources:
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/baremetal-installer
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/cluster-ingress-operator
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/cluster-kube-apiserver-operator
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/cluster-network-operator
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/cluster-openshift-apiserver-operator
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/console-operator
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/coredns
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/hyperkube
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/installer
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/installer-artifacts
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/machine-config-operator
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/machine-os-content
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/openshift-controller-manager
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/ovn-kubernetes
+- mirrors:
+  - rhel8-ocp-auto.schmaustech.com:5000/ocp4/openshift4
+  source: registry.svc.ci.openshift.org/ipv6/release
+pullSecret: 'PULLSECRETHERE'
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIIF9zCCA9+gAwIBAgIUdbNWxmtPcF/40j9OFxmqillxV68wDQYJKoZIhvcNAQEL
+  BQAwgYoxCzAJBgNVBAYTAlVTMRIwEAYDVQQIDAlNaW5uZXNvdGExFjAUBgNVBAcM
+  DUJyb29rbHluIFBhcmsxEDAOBgNVBAoMB1JlZCBIYXQxFDASBgNVBAsMC0VuZ2lu
+  ZWVyaW5nMScwJQYDVQQDDB5yaGVsOC1vY3AtYXV0by5zY2htYXVzdGVjaC5jb20w
+  HhcNMjAwMTMxMjAyOTU4WhcNMjEwMTMwMjAyOTU4WjCBijELMAkGA1UEBhMCVVMx
+  EjAQBgNVBAgMCU1pbm5lc290YTEWMBQGA1UEBwwNQnJvb2tseW4gUGFyazEQMA4G
+  A1UECgwHUmVkIEhhdDEUMBIGA1UECwwLRW5naW5lZXJpbmcxJzAlBgNVBAMMHnJo
+  ZWw4LW9jcC1hdXRvLnNjaG1hdXN0ZWNoLmNvbTCCAiIwDQYJKoZIhvcNAQEBBQAD
+  ggIPADCCAgoCggIBALW8yGRwjvWusqDpcBOEa4+RLeqbC0f+MmyIPlen3hKwAp4J
+  KW0Eg7p7Y9P0Ltr78QgQm4287s+15BgE7iI9KwUvjIK1QEYGd/w8rRnVHzJ8tWq3
+  mzkQ/nO9g8m9G8oQtWF9uQuk4KPkuPuUblNOEYNSg+E4S4LFNTrqCgK6r15kN0JN
+  l8v8q9MenROrXoHYNYcKRCKHY0loY37TSumE+rInNIc3HyjJAYaGpLO7HH+CXowF
+  tKEcPcSG4ljMJoYnpGG+6IBz69qe6/bRdEjWL6LdcibQ0+OLp6htqb7DDrPEWttg
+  ScDQ/MxdbGh9VM9wQmbubQBshWw8FbKcQeS1Rnl8hXR5dTtbdpyGquzRPljAHT+z
+  A/kOwjiLFHY1cxB+Y7jtYQzAOe4ZjHyQMZP3k/+OALnBUMcEFAB9nvcsJRLA69tR
+  /9L+W5lcslkG7kCDRfpztfcrm2HzvzU6/XxrERPJzaA1z0/TDPpTLKdzaR+nWZBx
+  h9x46iAQXRUjX29IgKj34r81OywO2e87rgGEt+0FWv8+93iLzrzPV0LXiFcKvhBq
+  24Jdz0X3uKdl7vENXxi1uMg02XqCtctsvdKiqS3rcPnnzUbieiaQNtPapSnuROin
+  qJIjkZIGLm+KOjPzTww97urqBmRY4DUK2a+phfcusLGEhAWTbHeyG1U6sNyVAgMB
+  AAGjUzBRMB0GA1UdDgQWBBQ6GdsYet0W7g7vwCKz7HnCILOHBDAfBgNVHSMEGDAW
+  gBQ6GdsYet0W7g7vwCKz7HnCILOHBDAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3
+  DQEBCwUAA4ICAQA4ORGvqH59pvx5R0X9/ijetji6p91A0jzuUN66No4iXOgFVxqm
+  55wMOsqDofWjwk8eOF4RwVDAeuJtev4EuWs5zZoHn3njJWoVmBHg2pYTpWGPRNHI
+  RWn3Iu3jmbnUKpY/z/oNiJf1ZlpvOnCWyKhegPbPtosUyTYmGSlxQbOci2pM68qF
+  e4BOP99uyhGqCQmDm9jIcy3x5BxqPBcfq9Rf5eYty7ae37nxOIadGW+wgrfYmswQ
+  st5gI2kQPKsNqIjMLDQK6Ksz1hlSSBGQ3EXktj80v3SNtqz+FFlCdYR0TnHF1NiH
+  oqpiOnAY2FtGPiUkCAh9tt7Bg/G3NxKiVqbt0K3JDsMEn3Wybx6nVb4lBIEHvIBj
+  0uhSU/sGIMPYD7BLtz9T+0Z0bcSTcJlNqk8Uwc1qZIwGG+aqDGglbg7wgi6bzeUF
+  ICzOy2dVz7nTcMm56D8hLayY0svuOdR+5u95BaSVkRUZVZ+P161TGgBKHa3tM9Qy
+  5dJKzDpXeOOt6EdRDtVJps9iecszPP6+WEFpMIor+anZWPvGVSf0b1Dq8z9+EZnS
+  JI+xsXHvWLfdSv9P+PUY2iAgjuh/MMLgn+Ks3WrLQrTjXVr4o/O+JISJye5ZwJty
+  pAn682I9bc5zrD2MMape9f3Qo1pI6Vnekc5Wn/EpP2XnvXqYEz3C9FsItg==
+  -----END CERTIFICATE-----
